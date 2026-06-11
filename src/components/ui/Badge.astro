@@ -1,0 +1,20 @@
+---
+export interface Props {
+  variant?: 'default' | 'success' | 'warning' | 'error' | 'info';
+  class?: string;
+}
+
+const { variant = 'default' } = Astro.props;
+
+const variants: Record<string, string> = {
+  default: 'bg-canvas-soft text-body',
+  success: 'bg-win-soft text-win',
+  warning: 'bg-draw-soft text-draw',
+  error: 'bg-loss-soft text-loss',
+  info: 'bg-link-bg-soft text-link',
+};
+---
+
+<span class={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${variants[variant]} ${Astro.props.class || ''}`}>
+  <slot />
+</span>

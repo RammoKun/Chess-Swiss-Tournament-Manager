@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/ui/Button.astro';
+import Card from '../components/ui/Card.astro';
+import AuthNav from '../components/auth/AuthNav';
+---
+
+<Layout>
+  <header class="sticky top-0 z-50 h-16 border-b border-hairline bg-canvas/80 backdrop-blur-md">
+    <nav class="mx-auto flex h-full max-w-[1400px] items-center justify-between px-6 lg:px-10">
+      <a href="/" class="text-sm font-semibold tracking-tight">♟ Chess Tournament Manager</a>
+      <AuthNav client:load />
+    </nav>
+  </header>
+
+  <main>
+    <section class="relative overflow-hidden pb-32 pt-20 sm:pb-40 sm:pt-28">
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_#007cf0_0%,_#7928ca_30%,_#ff0080_60%,_#ff4d4d_80%,_#f9cb28_100%)] opacity-[0.07]" />
+      <div class="relative px-6 lg:px-10">
+        <div class="mx-auto max-w-[820px] text-center">
+          <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-hairline bg-canvas px-4 py-1.5 text-xs text-body">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-success" />
+            Free &amp; open source
+          </div>
+          <h1 class="text-[clamp(2.5rem,5vw,4.5rem)] font-semibold leading-[1.05] tracking-[-2.4px] text-ink">
+            Run a chess tournament.<br />No server required.
+          </h1>
+          <p class="mx-auto mt-5 max-w-[600px] text-[clamp(1rem,2vw,1.25rem)] leading-relaxed text-body">
+            Swiss-system pairings, live standings, Google sign-in — everything you need to run a
+            smooth tournament, all in your browser.
+          </p>
+          <div class="mt-8 flex items-center justify-center gap-4">
+            <Button variant="primary" size="lg" href="/login">Get Started</Button>
+            <Button variant="secondary" size="lg" href="#how-it-works">How It Works</Button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="py-24">
+      <div class="mx-auto max-w-[1400px] px-6 lg:px-10">
+        <h2 class="text-center text-[clamp(1.5rem,3vw,2rem)] font-semibold tracking-[-0.96px]">How it works</h2>
+        <div class="mt-14 grid gap-6 sm:grid-cols-3">
+          <Card padding="lg" class="text-center">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-ink text-on-ink text-lg font-semibold">1</div>
+            <h3 class="mt-4 text-lg font-semibold">Create a tournament</h3>
+            <p class="mt-2 text-sm text-body leading-relaxed">Name it, set the rounds, add your players. Takes 30 seconds.</p>
+          </Card>
+          <Card padding="lg" class="text-center">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-ink text-on-ink text-lg font-semibold">2</div>
+            <h3 class="mt-4 text-lg font-semibold">Play each round</h3>
+            <p class="mt-2 text-sm text-body leading-relaxed">Pairings are computed automatically. Enter results as you go.</p>
+          </Card>
+          <Card padding="lg" class="text-center">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-ink text-on-ink text-lg font-semibold">3</div>
+            <h3 class="mt-4 text-lg font-semibold">See the standings</h3>
+            <p class="mt-2 text-sm text-body leading-relaxed">Live leaderboard with tiebreakers. Share with your players.</p>
+          </Card>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-hairline py-16">
+      <div class="mx-auto max-w-[1400px] px-6 lg:px-10">
+        <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
+          <p class="text-sm text-body">♟ Chess Tournament Manager — built with Astro &amp; Firebase</p>
+          <div class="flex gap-6 text-sm text-body">
+            <a href="/privacy" class="hover:text-ink transition-colors">Privacy</a>
+            <a href="/terms" class="hover:text-ink transition-colors">Terms</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

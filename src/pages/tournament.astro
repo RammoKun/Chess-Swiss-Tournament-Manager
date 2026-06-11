@@ -1,0 +1,19 @@
+---
+import Layout from '../layouts/Layout.astro';
+import TournamentView from '../components/tournament/TournamentView';
+---
+
+<Layout>
+  <header class="sticky top-0 z-50 h-16 border-b border-hairline bg-canvas/80 backdrop-blur-md">
+    <nav class="mx-auto flex h-full max-w-[1400px] items-center justify-between px-6 lg:px-10">
+      <div class="flex items-center gap-4">
+        <a href="/" class="text-sm font-semibold tracking-tight no-underline text-ink">♟</a>
+        <a href="/dashboard" class="text-xs text-body hover:text-ink transition-colors">Dashboard</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="mx-auto max-w-[1400px] px-6 lg:px-10 py-8">
+    <TournamentView client:load />
+  </main>
+</Layout>
