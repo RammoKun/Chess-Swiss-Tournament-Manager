@@ -132,6 +132,7 @@ export default function TournamentView() {
       id: crypto.randomUUID(),
       name: playerName.trim(),
       rating: parseInt(playerRating) || 0,
+      initialRating: parseInt(playerRating) || 0,
       seed: tournament.players.length + 1,
       colorHistory: [],
     };
@@ -161,6 +162,7 @@ export default function TournamentView() {
           id: crypto.randomUUID(),
           name: item.name,
           rating: parseInt(item.rating) || 0,
+          initialRating: parseInt(item.rating) || 0,
           seed: tournament.players.length + newPlayers.length + 1,
           colorHistory: [],
         });
@@ -250,6 +252,10 @@ export default function TournamentView() {
         else if (result === '0-1') scoreA = 0;
         else scoreA = 0.5;
         const elo = calculateElo(whitePlayer.rating, blackPlayer.rating, scoreA);
+        const whiteChange = elo.newRatingA - whitePlayer.rating;
+        const blackChange = elo.newRatingB - blackPlayer.rating;
+        pairings[pairingIndex].whiteEloChange = whiteChange;
+        pairings[pairingIndex].blackEloChange = blackChange;
         updatedPlayers = tournament.players.map((p) => {
           if (p.id === whitePlayer.id) return { ...p, rating: elo.newRatingA };
           if (p.id === blackPlayer.id) return { ...p, rating: elo.newRatingB };
@@ -813,6 +819,13 @@ export default function TournamentView() {
 
                 {isExpanded && (
                   <div className="border-t border-hairline px-4 py-3">
+                    <div className="mb-2 flex items-center gap-3 px-3 text-[11px] font-medium uppercase tracking-wider text-mute">
+                      <span className="w-6" />
+                      <span className="flex-1 text-right">White</span>
+                      <span className="text-xs text-mute">vs</span>
+                      <span className="flex-1">Black</span>
+                      <div className="flex gap-1" style={{ width: isCurrentRound && isOwner ? 119 : 50 }} />
+                    </div>
                     <div className="space-y-2">
                       {round.pairings.map((p, pi) => {
                         const white = tournament.players.find((pl) => pl.id === p.white);
@@ -825,13 +838,23 @@ export default function TournamentView() {
                             <span className="w-6 text-xs text-mute">#{p.tableNumber}</span>
                             <div className="flex flex-1 items-center gap-2">
                               <span className="flex-1 text-right text-sm font-medium text-ink">
-                                {white && <span className="mr-1 text-xs text-mute">{white.rating ? `(${white.rating})` : '(u)'}</span>}
                                 {white?.name || '?'}
+                                {white && <span className="ml-1 text-xs text-mute">{white.rating ? `(${white.rating})` : '(u)'}</span>}
+                                {p.result && typeof p.whiteEloChange === 'number' && (
+                                  <span class={`ml-1 text-xs font-medium ${p.whiteEloChange > 0 ? 'text-win' : p.whiteEloChange < 0 ? 'text-loss' : 'text-mute'}`}>
+                                    {p.whiteEloChange > 0 ? `+${p.whiteEloChange}` : p.whiteEloChange}
+                                  </span>
+                                )}
                               </span>
                               <span className="text-xs text-mute">vs</span>
                               <span className="flex-1 text-sm font-medium text-ink">
                                 {black?.name || '?'}
-                                {black && <span className="ml-1 text-xs text-mute">{black.rating ? `(${black.rating})` : '(u)'}</span>}
+                                {black && <span className="mr-1 text-xs text-mute">{black.rating ? `(${black.rating})` : '(u)'}</span>}
+                                {p.result && typeof p.blackEloChange === 'number' && (
+                                  <span class={`ml-1 text-xs font-medium ${p.blackEloChange > 0 ? 'text-win' : p.blackEloChange < 0 ? 'text-loss' : 'text-mute'}`}>
+                                    {p.blackEloChange > 0 ? `+${p.blackEloChange}` : p.blackEloChange}
+                                  </span>
+                                )}
                               </span>
                             </div>
                             {isCurrentRound && isOwner && (

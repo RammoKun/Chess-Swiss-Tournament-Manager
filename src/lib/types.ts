@@ -2,6 +2,7 @@ export interface Player {
   id: string;
   name: string;
   rating: number;
+  initialRating: number;
   seed: number;
   colorHistory: ('w' | 'b' | 'bye')[];
 }
@@ -13,6 +14,8 @@ export interface Pairing {
   black: string;
   result: GameResult;
   tableNumber: number;
+  whiteEloChange?: number;
+  blackEloChange?: number;
 }
 
 export interface Round {

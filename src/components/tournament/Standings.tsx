@@ -88,6 +88,13 @@ export default function Standings({ standings, players }: Props) {
                       </span>
                       <span className="font-medium text-ink">{s.player.name}</span>
                       <span className="text-xs text-mute">({s.player.rating})</span>
+                      {s.player.initialRating !== undefined && s.player.rating !== s.player.initialRating && (
+                        <span class={`text-xs font-medium ${s.player.rating > s.player.initialRating ? 'text-win' : 'text-loss'}`}>
+                          {s.player.rating > s.player.initialRating
+                            ? `+${s.player.rating - s.player.initialRating}`
+                            : s.player.rating - s.player.initialRating}
+                        </span>
+                      )}
                     </div>
                     <div className="mt-1.5 flex h-1.5 w-full max-w-[200px] overflow-hidden rounded-full bg-canvas-soft">
                       <div
