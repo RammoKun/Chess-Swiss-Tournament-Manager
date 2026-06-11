@@ -39,6 +39,7 @@ export default function TournamentView() {
   const actionsRef = useRef<HTMLDivElement>(null);
   const exportMenuRef = useRef<HTMLDivElement>(null);
   const importPanelRef = useRef<HTMLDivElement>(null);
+  const [scoringPairing, setScoringPairing] = useState<{ roundIndex: number; pairingIndex: number } | null>(null);
 
   const tournamentId = typeof window !== 'undefined'
     ? new URLSearchParams(window.location.search).get('id')
@@ -427,7 +428,7 @@ export default function TournamentView() {
           ) : (
             <h1 className="truncate text-2xl font-semibold tracking-tight">{tournament.name}</h1>
           )}
-          <div className="mt-1 flex items-center gap-3 text-sm text-body">
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-body">
             <span>{tournament.players.length} players</span>
             <span>·</span>
             <span>Round {tournament.currentRound || 0}/{tournament.numberOfRounds}</span>
@@ -444,16 +445,6 @@ export default function TournamentView() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            data-theme-toggle
-            className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-hairline bg-canvas text-mute transition-all duration-150 hover:text-ink"
-            title="Toggle dark mode"
-          >
-            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          </button>
-
           {isOwner && (
             <div ref={actionsRef} className="relative">
               <button
@@ -563,12 +554,12 @@ export default function TournamentView() {
         </div>
       )}
 
-      <div className="mb-6 flex gap-1 border-b border-hairline">
+      <div className="mb-6 flex gap-1 overflow-x-auto border-b border-hairline">
         {(['players', 'rounds', 'standings'] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            class={`cursor-pointer border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
+            class={`cursor-pointer whitespace-nowrap border-b-2 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors ${
               tab === t
                 ? 'border-ink text-ink'
                 : 'border-transparent text-mute hover:text-ink'
@@ -583,7 +574,7 @@ export default function TournamentView() {
         <div className="space-y-4">
           {isOwner && tournament.status !== 'completed' && (
             <div className="space-y-3">
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                 <input
                   ref={nameInputRef}
                   value={playerName}
@@ -592,21 +583,23 @@ export default function TournamentView() {
                   className="h-10 flex-1 rounded-sm border border-hairline bg-canvas px-3 text-sm text-ink placeholder:text-mute focus:border-ink focus:outline-none"
                   onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
                 />
-                <input
-                  type="number"
-                  value={playerRating}
-                  onChange={(e) => setPlayerRating(e.target.value)}
-                  placeholder="Rating"
-                  className="h-10 w-20 rounded-sm border border-hairline bg-canvas px-3 text-sm text-ink focus:border-ink focus:outline-none"
-                  onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
-                />
-                <button
-                  onClick={addPlayer}
-                  disabled={!playerName.trim()}
-                  className="cursor-pointer rounded-pill bg-ink px-4 text-sm font-medium text-on-ink transition-all duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
-                >
-                  Add
-                </button>
+                <div className="flex gap-2 sm:gap-3">
+                  <input
+                    type="number"
+                    value={playerRating}
+                    onChange={(e) => setPlayerRating(e.target.value)}
+                    placeholder="Rating"
+                    className="h-10 w-full sm:w-20 rounded-sm border border-hairline bg-canvas px-3 text-sm text-ink focus:border-ink focus:outline-none"
+                    onKeyDown={(e) => e.key === 'Enter' && addPlayer()}
+                  />
+                  <button
+                    onClick={addPlayer}
+                    disabled={!playerName.trim()}
+                    className="cursor-pointer rounded-pill bg-ink px-5 sm:px-4 text-sm font-medium text-on-ink transition-all duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+                  >
+                    Add
+                  </button>
+                </div>
               </div>
               <div ref={importPanelRef}>
                 <div className="flex gap-2">
@@ -819,84 +812,82 @@ export default function TournamentView() {
 
                 {isExpanded && (
                   <div className="border-t border-hairline px-4 py-3">
-                    <div className="mb-2 flex items-center gap-3 px-3 text-[11px] font-medium uppercase tracking-wider text-mute">
-                      <span className="w-6" />
+                    <div className="mb-1.5 flex items-center gap-2 px-3 text-[10px] font-medium uppercase tracking-wider text-mute/60">
+                      <span className="w-5 sm:w-7 text-center" />
                       <span className="flex-1 text-right">White</span>
-                      <span className="text-xs text-mute">vs</span>
+                      <span className="shrink-0 px-0.5">vs</span>
                       <span className="flex-1">Black</span>
-                      <div className="flex gap-1" style={{ width: isCurrentRound && isOwner ? 119 : 50 }} />
+                      <span className="w-[52px] sm:w-[58px]" />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       {round.pairings.map((p, pi) => {
                         const white = tournament.players.find((pl) => pl.id === p.white);
                         const black = tournament.players.find((pl) => pl.id === p.black);
+                        const needsScore = isCurrentRound && isOwner;
+                        const isScoring = scoringPairing?.roundIndex === ri && scoringPairing?.pairingIndex === pi;
                         return (
                           <div
                             key={pi}
-                            className="flex items-center gap-3 rounded-md border border-hairline px-3 py-2"
+                            class={`rounded-md border transition-shadow ${isScoring ? 'border-ink shadow-sm' : p.result ? 'border-ink/15' : 'border-hairline'}`}
                           >
-                            <span className="w-6 text-xs text-mute">#{p.tableNumber}</span>
-                            <div className="flex flex-1 items-center gap-2">
-                              <span className="flex-1 text-right text-sm font-medium text-ink">
+                            <div
+                              onClick={() => {
+                                if (!needsScore) return;
+                                setScoringPairing(isScoring ? null : { roundIndex: ri, pairingIndex: pi });
+                              }}
+                              class={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 ${needsScore && !isScoring ? 'cursor-pointer transition-colors hover:bg-canvas-soft' : ''}`}
+                            >
+                              <span className="w-5 sm:w-7 text-[11px] sm:text-xs text-mute shrink-0 text-center">#{p.tableNumber}</span>
+                              <span className="flex-1 text-right text-xs sm:text-sm font-medium text-ink leading-snug">
                                 {white?.name || '?'}
-                                {white && <span className="ml-1 text-xs text-mute">{white.rating ? `(${white.rating})` : '(u)'}</span>}
+                                {white && <span className="ml-1 text-[10px] sm:text-xs text-mute whitespace-nowrap">{white.rating ? `(${white.rating})` : '(u)'}</span>}
                                 {p.result && typeof p.whiteEloChange === 'number' && (
-                                  <span class={`ml-1 text-xs font-medium ${p.whiteEloChange > 0 ? 'text-win' : p.whiteEloChange < 0 ? 'text-loss' : 'text-mute'}`}>
+                                  <span class={`ml-1 text-[10px] sm:text-xs font-medium whitespace-nowrap ${p.whiteEloChange > 0 ? 'text-win' : p.whiteEloChange < 0 ? 'text-loss' : 'text-mute'}`}>
                                     {p.whiteEloChange > 0 ? `+${p.whiteEloChange}` : p.whiteEloChange}
                                   </span>
                                 )}
                               </span>
-                              <span className="text-xs text-mute">vs</span>
-                              <span className="flex-1 text-sm font-medium text-ink">
+                              <span className="text-[11px] sm:text-xs text-mute shrink-0 px-0.5">vs</span>
+                              <span className="flex-1 text-xs sm:text-sm font-medium text-ink leading-snug">
                                 {black?.name || '?'}
-                                {black && <span className="mr-1 text-xs text-mute">{black.rating ? `(${black.rating})` : '(u)'}</span>}
+                                {black && <span className="mr-1 text-[10px] sm:text-xs text-mute whitespace-nowrap">{black.rating ? `(${black.rating})` : '(u)'}</span>}
                                 {p.result && typeof p.blackEloChange === 'number' && (
-                                  <span class={`ml-1 text-xs font-medium ${p.blackEloChange > 0 ? 'text-win' : p.blackEloChange < 0 ? 'text-loss' : 'text-mute'}`}>
+                                  <span class={`ml-1 text-[10px] sm:text-xs font-medium whitespace-nowrap ${p.blackEloChange > 0 ? 'text-win' : p.blackEloChange < 0 ? 'text-loss' : 'text-mute'}`}>
                                     {p.blackEloChange > 0 ? `+${p.blackEloChange}` : p.blackEloChange}
                                   </span>
                                 )}
                               </span>
+                              {p.result ? (
+                                <span class={`shrink-0 rounded border px-2 sm:px-2.5 py-0.5 sm:py-1 text-[11px] sm:text-xs font-medium ${getResultClass(p.result, true)}`}>
+                                  {p.result === '0.5-0.5' ? '½-½' : p.result}
+                                </span>
+                              ) : needsScore ? (
+                                <span className="shrink-0 rounded border border-dashed border-hairline-strong px-2 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs text-mute">
+                                  {isScoring ? 'Cancel' : 'Score'}
+                                </span>
+                              ) : null}
                             </div>
-                            {isCurrentRound && isOwner && (
-                              <div className="flex gap-1">
+                            {isScoring && (
+                              <div className="border-t border-hairline px-2.5 sm:px-3 py-1.5 flex items-center justify-center gap-1.5">
                                 <button
-                                  onClick={() => setResult(ri, pi, '1-0')}
-                                  class={`cursor-pointer rounded border px-2 py-1 text-xs transition-colors ${
-                                    p.result === '1-0'
-                                      ? 'bg-win-soft text-win border-win/30'
-                                      : 'border-hairline text-mute hover:border-win/30 hover:text-win'
-                                  }`}
+                                  onClick={(e) => { e.stopPropagation(); setResult(ri, pi, '1-0'); setScoringPairing(null); }}
+                                  className="cursor-pointer rounded border border-win/30 bg-win-soft px-2 py-1 text-[11px] font-medium text-win transition-colors hover:bg-win/10"
                                 >
                                   1-0
                                 </button>
                                 <button
-                                  onClick={() => setResult(ri, pi, '0.5-0.5')}
-                                  class={`cursor-pointer rounded border px-2 py-1 text-xs transition-colors ${
-                                    p.result === '0.5-0.5'
-                                      ? 'bg-draw-soft text-draw border-draw/30'
-                                      : 'border-hairline text-mute hover:border-draw/30 hover:text-draw'
-                                  }`}
+                                  onClick={(e) => { e.stopPropagation(); setResult(ri, pi, '0.5-0.5'); setScoringPairing(null); }}
+                                  className="cursor-pointer rounded border border-draw/30 bg-draw-soft px-2 py-1 text-[11px] font-medium text-draw transition-colors hover:bg-draw/10"
                                 >
                                   ½-½
                                 </button>
                                 <button
-                                  onClick={() => setResult(ri, pi, '0-1')}
-                                  class={`cursor-pointer rounded border px-2 py-1 text-xs transition-colors ${
-                                    p.result === '0-1'
-                                      ? 'bg-loss-soft text-loss border-loss/30'
-                                      : 'border-hairline text-mute hover:border-loss/30 hover:text-loss'
-                                  }`}
+                                  onClick={(e) => { e.stopPropagation(); setResult(ri, pi, '0-1'); setScoringPairing(null); }}
+                                  className="cursor-pointer rounded border border-loss/30 bg-loss-soft px-2 py-1 text-[11px] font-medium text-loss transition-colors hover:bg-loss/10"
                                 >
                                   0-1
                                 </button>
                               </div>
-                            )}
-                            {!isCurrentRound && p.result && (
-                              <span
-                                class={`rounded border px-2 py-1 text-xs font-medium ${getResultClass(p.result, true)}`}
-                              >
-                                {p.result}
-                              </span>
                             )}
                           </div>
                         );

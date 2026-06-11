@@ -134,7 +134,7 @@ export default function TournamentList() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-4">
           <h2 className="text-lg font-semibold">My Tournaments</h2>
           {user && (
@@ -149,7 +149,7 @@ export default function TournamentList() {
         {!showCreate && (
           <button
             onClick={() => setShowCreate(true)}
-            className="cursor-pointer rounded-pill bg-ink px-5 py-2 text-sm font-medium text-on-ink transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
+            className="cursor-pointer w-full sm:w-auto rounded-pill bg-ink px-5 py-2 text-sm font-medium text-on-ink transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
           >
             + New Tournament
           </button>
@@ -187,17 +187,17 @@ export default function TournamentList() {
               />
               <span className="ml-2 text-xs text-mute">(3–15)</span>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <button
                 onClick={handleCreate}
                 disabled={creating || !newName.trim()}
-                className="cursor-pointer rounded-pill bg-ink px-5 py-2 text-sm font-medium text-on-ink transition-all duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+                className="cursor-pointer w-full sm:w-auto rounded-pill bg-ink px-5 py-2 text-sm font-medium text-on-ink transition-all duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
               >
                 {creating ? 'Creating...' : 'Create'}
               </button>
               <button
                 onClick={() => setShowCreate(false)}
-                className="cursor-pointer rounded-pill border border-hairline bg-canvas px-5 py-2 text-sm font-medium text-ink transition-all duration-150 hover:bg-canvas-soft active:scale-[0.98]"
+                className="cursor-pointer w-full sm:w-auto rounded-pill border border-hairline bg-canvas px-5 py-2 text-sm font-medium text-ink transition-all duration-150 hover:bg-canvas-soft active:scale-[0.98]"
               >
                 Cancel
               </button>

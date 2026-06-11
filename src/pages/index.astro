@@ -8,7 +8,7 @@ import AuthNav from '../components/auth/AuthNav';
 <Layout>
   <header class="sticky top-0 z-50 h-16 border-b border-hairline bg-canvas/80 backdrop-blur-md">
     <nav class="mx-auto flex h-full max-w-[1400px] items-center justify-between px-6 lg:px-10">
-      <a href="/" class="text-sm font-semibold tracking-tight">♟ Chess Tournament Manager</a>
+      <a href="/" class="text-sm font-semibold tracking-tight truncate max-w-[140px] sm:max-w-none">♟ Chess Tournament Manager</a>
       <AuthNav client:load />
     </nav>
   </header>
@@ -29,7 +29,7 @@ import AuthNav from '../components/auth/AuthNav';
             Swiss-system pairings, live standings, Google sign-in — everything you need to run a
             smooth tournament, all in your browser.
           </p>
-          <div class="mt-8 flex items-center justify-center gap-4">
+          <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <Button variant="primary" size="lg" href="/login">Get Started</Button>
             <Button variant="secondary" size="lg" href="#how-it-works">How It Works</Button>
           </div>
